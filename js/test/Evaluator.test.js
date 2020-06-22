@@ -12,6 +12,7 @@ describe('Evaluator.evalTruth', () => {
   ${'extraneous parameters'} | ${'true'} | ${{ blah: 0 }} | ${true}
   ${'simple parameter sub'} | ${'FOO'} | ${{ FOO: 1 }} | ${true}
   ${'complex expression'} | ${'BAR || (FOO && 1)'} | ${{ BAR: 'false', FOO: 1 }} | ${true}
+  ${'complex math'}| ${'BAR % 2 == 0'} | ${{ BAR: 4 }} | ${true}
   `("$desc; '$expression' with conditions '$parameters' -> $result'", ({ desc, expression, parameters, result }) => {
     const evaluator = new Evaluator({parameters: parameters})
     expect(evaluator.evalTruth(expression)).toBe(result)
@@ -36,7 +37,15 @@ describe('Evaluator.evalTruth', () => {
   `("rejects unknown parameter '$param'", ({param}) => {
     const evaluator = new Evaluator()
     const expression = `true || ${param}`
-    expect(() => evaluator.evalTruth(expression)).toThrow(new RegExp(`Condition parameter '${param}' is not defined.`))
+    expect(() => evaluator.evalTruth(expression)).toThrow(new RegExp(`^Condition parameter '${param}' is not defined.`))
+  })
+
+  test.each`
+  expression
+  ${'someFunc()'}
+  `("rejects unsafe expression '$expression'", ({ expression }) => {
+    const evaluator = new Evaluator()
+    expect(() => evaluator.evalTruth(expression)).toThrow(/Invalid expression/)
   })
 
   test.each`
