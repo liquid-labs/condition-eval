@@ -29,6 +29,17 @@ describe('Evaluator.evalTruth', () => {
   })
 
   test.each`
+  param
+  ${'TRUE'}
+  ${'FALSE'}
+  ${'UNKNOWN'}
+  `("rejects unknown parameter '$param'", ({param}) => {
+    const evaluator = new Evaluator()
+    const expression = `true || ${param}`
+    expect(() => evaluator.evalTruth(expression)).toThrow(new RegExp(`Condition parameter '${param}' is not defined.`))
+  })
+
+  test.each`
   input
   ${0}
   ${false}
