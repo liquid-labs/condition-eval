@@ -23,6 +23,11 @@ describe('Evaluator.evalTruth', () => {
     expect(evaluator.evalTruth('BAR || FOO')).toBe(true)
   })
 
+  test('utilizes zeroRes', () => {
+    const evaluator = new Evaluator({zeroRes: [/^.+_ZERO_PARAM/]})
+    expect(evaluator.evalTruth('SOME_ZERO_PARAM')).toBe(false)
+  })
+
   test.each`
   input
   ${0}

@@ -3,11 +3,11 @@ const safeEvalRe = new RegExp('(^([0-9&|<>=]*|false|true)(( [0-9&|<>= ]*)| false
 
 const Evaluator = class {
   parameters
-  zerosRes
+  zeroRes
 
   constructor(settings) {
     Object.assign(this, settings)
-    
+
     this.parameters = this.parameters || {}
     this.zeroRes = this.zeroRes || []
   }
@@ -28,19 +28,17 @@ const Evaluator = class {
         val = process.env[param]
       }
       if (val === undefined) {
-        if (this.zerosRes.some((re) => param.match(re))) {
+        if (this.zeroRes.some((re) => param.match(re))) {
           val = 0
+        }
+        else {
+          throw new Error(`Condition parameter '${param}' is not defined. Update settings and/or check expression.`)
         }
       }
 
-      if (val === undefined) {
-        throw new Error(`Condition parameter '${param}' is not defined. Update settings and/or check expression.`)
-      }
-      else {
-        // 'replaceAll' not supported on node (TODO: add Babel tform); though 'replace' does replace all *if* first arg
-        // is RE... so... maybe not necessary?)
-        expression = expression.replace(new RegExp(`(^|[^A-Z0-9_])${param}([^A-Z0-9_]|$)`), `$1 ${val} $2`)
-      }
+      // 'replaceAll' not supported on node (TODO: add Babel tform); though 'replace' does replace all *if* first arg is
+      // RE... so... maybe not necessary?)
+      expression = expression.replace(new RegExp(`(^|[^A-Z0-9_])${param}([^A-Z0-9_]|$)`), `$1 ${val} $2`)
     }
 
     // check that everything is save
