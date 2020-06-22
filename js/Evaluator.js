@@ -1,5 +1,5 @@
-const paramRe = new RegExp('([A-Z_][A-Z0-9_]*)', 'g')
-const safeEvalRe = new RegExp('(^([0-9&|<>=]*|false|true)(( [0-9&|<>= ]*)| false| true)+)?$')
+const paramRe = new RegExp('(^|[ (])([A-Z_][A-Z0-9_]+)', 'g')
+const safeEvalRe = new RegExp('^ *([0-9]+|false|true)(( |\\()+([0-9]+|true|false|&&|[|]{2}|==|!=|\\+|-|%|\\*)( |\\)*))* *$')
 
 const Evaluator = class {
   parameters
@@ -22,7 +22,7 @@ const Evaluator = class {
     // replace all the parameters in the expression
     const results = expression.matchAll(paramRe)
     for (var result of results) {
-      const param = result[0]
+      const param = result[2]
       let val = this.parameters[param] // look on the parameter object
       if (val === undefined) { // if not defined, look on process.env
         val = process.env[param]
