@@ -12,7 +12,8 @@ describe('Evaluator.evalTruth', () => {
   ${'extraneous parameters'} | ${'true'} | ${{ blah: 0 }} | ${true}
   ${'simple parameter sub'} | ${'FOO'} | ${{ FOO: 1 }} | ${true}
   ${'complex expression'} | ${'BAR || (FOO && 1)'} | ${{ BAR: 'false', FOO: 1 }} | ${true}
-  ${'complex math'}| ${'BAR % 2 == 0'} | ${{ BAR: 4 }} | ${true}
+  ${'simple math'}| ${'2 + BAR - FOO == 3'} | ${{ BAR: 4, FOO: 3 }} | ${true}
+  ${'complex math'}| ${'(BAR % 2 == 0) && (FOO * 3 != 6)'} | ${{ BAR: 4, FOO: 3 }} | ${true}
   `("$desc; '$expression' with conditions '$parameters' -> $result'", ({ desc, expression, parameters, result }) => {
     const evaluator = new Evaluator({parameters: parameters})
     expect(evaluator.evalTruth(expression)).toBe(result)
