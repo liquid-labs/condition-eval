@@ -17,9 +17,18 @@ describe('Evaluator.evalTruth', () => {
     expect(evaluator.evalTruth(expression)).toBe(result)
   })
 
+  test('falls back to process.env for substitution', () => {
+    process.env.FOO = 'true'
+    const evaluator = new Evaluator({parameters: { BAR: 'false' }})
+    expect(evaluator.evalTruth('BAR || FOO')).toBe(true)
+  })
+
   test.each`
   input
   ${0}
+  ${false}
+  ${1}
+  ${true}
   `("rejects non-string input '$input'", ({ input }) => {
     const evaluator = new Evaluator()
     expect(() => evaluator.evalTruth(input)).toThrow(/^Expression must be a string./)
