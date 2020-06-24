@@ -14,6 +14,8 @@ describe('Evaluator.evalTruth', () => {
   ${'complex expression'} | ${'BAR || (FOO && 1)'} | ${{ BAR: 'false', FOO: 1 }} | ${true}
   ${'simple math'}| ${'2 + BAR - FOO == 3'} | ${{ BAR: 4, FOO: 3 }} | ${true}
   ${'complex math'}| ${'(BAR % 2 == 0) && (FOO * 3 != 6)'} | ${{ BAR: 4, FOO: 3 }} | ${true}
+  ${'not expression'} | ${'!BAR'} | ${{ BAR: 1 }} | ${false}
+  ${'complex not expression'} | ${'FOO && !BAR'} | ${{ FOO: 1, BAR: false }} | ${true}
   `("$desc; '$expression' with conditions '$parameters' -> $result'", ({ desc, expression, parameters, result }) => {
     const evaluator = new Evaluator({parameters: parameters})
     expect(evaluator.evalTruth(expression)).toBe(result)
@@ -44,6 +46,7 @@ describe('Evaluator.evalTruth', () => {
   test.each`
   expression
   ${'someFunc()'}
+  ${'~1'}
   `("rejects unsafe expression '$expression'", ({ expression }) => {
     const evaluator = new Evaluator()
     expect(() => evaluator.evalTruth(expression)).toThrow(/Invalid expression/)

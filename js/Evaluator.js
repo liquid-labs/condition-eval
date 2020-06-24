@@ -1,5 +1,5 @@
-const paramRe = new RegExp('(^|[ (])([A-Z_][A-Z0-9_]+)', 'g')
-const safeEvalRe = new RegExp('^ *(\\(|[0-9]+|false|true)(( |\\()+([0-9]+|true|false|&&|[|]{2}|==|!=|\\+|-|%|\\*)( |\\)*))* *$')
+const paramRe = new RegExp('(^|[ (!&=|+-])([A-Z_][A-Z0-9_]+)', 'g')
+const safeEvalRe = new RegExp('^ *(\\(|[0-9]+|false|true|!)(( |\\()+([0-9]+|true|false|!|&&|[|]{2}|==|!=|\\+|-|%|\\*)( |\\)*))* *$')
 
 const Evaluator = class {
   parameters
@@ -38,7 +38,7 @@ const Evaluator = class {
 
       // 'replaceAll' not supported on node (TODO: add Babel tform); though 'replace' does replace all *if* first arg is
       // RE... so... maybe not necessary?)
-      expression = expression.replace(new RegExp(`(^|[^A-Z0-9_])${param}([^A-Z0-9_]|$)`), `$1 ${val} $2`)
+      expression = expression.replace(new RegExp(`(^|[^A-Z0-9_])${param}([^A-Z0-9_]|$)`, 'g'), `$1 ${val} $2`)
     }
 
     // check that everything is save
