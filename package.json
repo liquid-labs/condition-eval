@@ -34,5 +34,6 @@
   },
   "devDependencies": {
     "@liquid-labs/catalyst-scripts": "^1.0.0-alpha.28"
-  }
+  },
+  "dependencies": {}
 }
