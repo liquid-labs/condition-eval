@@ -27,7 +27,7 @@ const Evaluator = class {
 
   evalTruth(origExpression) {
     if (typeof origExpression !== 'string') {
-      throw new Error(`Expression must be a string. Got: '${expression}'.`)
+      throw new Error(`Expression must be a string. Got: '${origExpression}'.`)
     }
 
     var expression = origExpression // save original expression in case we need to reflect to user on error
