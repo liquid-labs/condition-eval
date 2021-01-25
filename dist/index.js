@@ -89,7 +89,7 @@ var Evaluator = (_temp = /*#__PURE__*/function () {
       var _this = this;
 
       if (typeof origExpression !== 'string') {
-        throw new Error("Expression must be a string. Got: '".concat(expression, "'."));
+        throw new Error("Expression must be a string. Got: '".concat(origExpression, "'."));
       }
 
       var expression = origExpression; // save original expression in case we need to reflect to user on error
