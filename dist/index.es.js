@@ -49,15 +49,30 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-var paramRe = new RegExp('([A-Z_][A-Z0-9_]*)', 'g');
-var safeEvalRe = new RegExp('(^([0-9&|<>=]*|false|true)(( [0-9&|<>= ]*)| false| true)+)?$');
+var paramRe = new RegExp('(^|[ (!&=|+-])([A-Z_][A-Z0-9_]+)', 'g');
+var safeEvalRe = new RegExp('^ *(\\(|[0-9]+|false|true|!)(( |\\()+([0-9]+|true|false|!|&&|[|]{2}|==|!=|\\+|-|%|\\*)( |\\)*))* *$');
+/**
+* A safe-ish (TODO: developed based on a Stackexchange post; find and link?) boolean expression evaluator.
+*/
+
 var Evaluator = (_temp = /*#__PURE__*/function () {
+  // declare recognized internal parameters
+
+  /**
+  * Recogrizes 'parameters' and 'zeroRes' field.
+  *
+  * 'parameters' maps strings to values. E.g.: parameters `{ "IS_CONTRACTOR": 1 }` would cause the condition
+  * `IS_CONTRACTOR` to evaluate true.
+  *
+  * 'zeroRes' is an array of RegExps used to match against a condition string *after* resolving all the parameters. If a
+  *    match is made, then that value is set to zero. I.e., `zeroRes` determines which parameters are default zero.
+  */
   function Evaluator(settings) {
     classCallCheck(this, Evaluator);
 
     defineProperty(this, "parameters", void 0);
 
-    defineProperty(this, "zerosRes", void 0);
+    defineProperty(this, "zeroRes", void 0);
 
     Object.assign(this, settings);
     this.parameters = this.parameters || {};
@@ -84,7 +99,7 @@ var Evaluator = (_temp = /*#__PURE__*/function () {
       try {
         var _loop = function _loop() {
           result = _step.value;
-          var param = result[0];
+          var param = result[2];
           var val = _this.parameters[param]; // look on the parameter object
 
           if (val === undefined) {
@@ -93,20 +108,18 @@ var Evaluator = (_temp = /*#__PURE__*/function () {
           }
 
           if (val === undefined) {
-            if (_this.zerosRes.some(function (re) {
+            if (_this.zeroRes.some(function (re) {
               return param.match(re);
             })) {
               val = 0;
+            } else {
+              throw new Error("Condition parameter '".concat(param, "' is not defined. Update settings and/or check expression."));
             }
-          }
+          } // 'replaceAll' not supported on node (TODO: add Babel tform); though 'replace' does replace all *if* first arg is
+          // RE... so... maybe not necessary?)
 
-          if (val === undefined) {
-            throw new Error("Condition parameter '".concat(param, "' is not defined. Update settings and/or check expression."));
-          } else {
-            // 'replaceAll' not supported on node (TODO: add Babel tform); though 'replace' does replace all *if* first arg
-            // is RE... so... maybe not necessary?)
-            expression = expression.replace(new RegExp("(^|[^A-Z0-9_])".concat(param, "([^A-Z0-9_]|$)")), "$1 ".concat(val, " $2"));
-          }
+
+          expression = expression.replace(new RegExp("(^|[^A-Z0-9_])".concat(param, "([^A-Z0-9_]|$)"), 'g'), "$1 ".concat(val, " $2"));
         };
 
         for (_iterator.s(); !(_step = _iterator.n()).done;) {
