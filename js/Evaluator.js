@@ -1,10 +1,23 @@
 const paramRe = new RegExp('(^|[ (!&=|+-])([A-Z_][A-Z0-9_]+)', 'g')
 const safeEvalRe = new RegExp('^ *(\\(|[0-9]+|false|true|!)(( |\\()+([0-9]+|true|false|!|&&|[|]{2}|==|!=|\\+|-|%|\\*)( |\\)*))* *$')
 
+/**
+* A safe-ish (TODO: developed based on a Stackexchange post; find and link?) boolean expression evaluator.
+*/
 const Evaluator = class {
+  // declare recognized internal parameters
   parameters
   zeroRes
 
+  /**
+  * Recogrizes 'parameters' and 'zeroRes' field.
+  *
+  * 'parameters' maps strings to values. E.g.: parameters `{ "IS_CONTRACTOR": 1 }` would cause the condition
+  * `IS_CONTRACTOR` to evaluate true.
+  *
+  * 'zeroRes' is an array of RegExps used to match against a condition string *after* resolving all the parameters. If a
+  *    match is made, then that value is set to zero. I.e., `zeroRes` determines which parameters are default zero.
+  */
   constructor(settings) {
     Object.assign(this, settings)
 
