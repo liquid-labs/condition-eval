@@ -16,6 +16,10 @@ describe('Evaluator.evalTruth', () => {
   ${'complex math'}| ${'(BAR % 2 == 0) && (FOO * 3 != 6)'} | ${{ BAR : 4, FOO : 3 }} | ${true}
   ${'not expression'} | ${'!BAR'} | ${{ BAR : 1 }} | ${false}
   ${'complex not expression'} | ${'FOO && !BAR'} | ${{ FOO : 1, BAR : false }} | ${true}
+  ${'greater than'} | ${'2 > 1'} | ${{}} | ${true}
+  ${'less than'} | ${'1 < 2'} | ${{}} | ${true}
+  ${'greater than equal to'} | ${'2 >= 1'} | ${{}} | ${true}
+  ${'less than equal to'} | ${'1 <= 2'} | ${{}} | ${true}
   `("$desc; '$expression' with conditions '$parameters' -> $result'", ({ desc, expression, parameters, result }) => {
   const evaluator = new Evaluator({ parameters : parameters })
   expect(evaluator.evalTruth(expression)).toBe(result)

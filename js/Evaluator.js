@@ -1,5 +1,6 @@
 const paramRe = new RegExp('(^|[ (!&=|+-])([A-Z_][A-Z0-9_]+)', 'g')
-const safeEvalRe = new RegExp('^ *(\\(|[0-9]+|false|true|!)(( |\\()+([0-9]+|true|false|!|&&|[|]{2}|==|!=|\\+|-|%|\\*)( |\\)*))* *$')
+const safeEvalRe = /^ *(\(|[0-9]+|false|true|!)(( |\()+([0-9]+|true|false|!|&&|[|]{2}|==|!=|\+|-|%|\*|<|>)( |\)*))* *$/
+// new RegExp('^ *(\\(|[0-9]+|false|true|!)(( |\\()+([0-9]+|true|false|!|&&|[|]{2}|==|!=|\\+|-|%|\\*|<|>)( |\\)*))* *$')
 
 /**
 * A safe-ish (TODO: developed based on a Stackexchange post; find and link?) boolean expression evaluator.
