@@ -49,9 +49,13 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-var paramRe = new RegExp('(^|[ (!&=|+-])([A-Z_][A-Z0-9_]*)', 'g');
-var safeEvalRe = /^ *(\(|[0-9]+|false|true|!)(( |\()+([0-9]+|true|false|!|&&|[|]{2}|==|!=|\+|-|%|\*|<|>|<=|>=)( |\)*))* *$/; // new RegExp('^ *(\\(|[0-9]+|false|true|!)(( |\\()+([0-9]+|true|false|!|&&|[|]{2}|==|!=|\\+|-|%|\\*|<|>)( |\\)*))* *$')
+var paramRe = new RegExp('(^|[ (!&=|+-])([A-Z_][A-Z0-9_]*)', 'g'); // start with: (, number, bool, or unary op !
+// at least on space or param
+// then maybe 0+ safe stuff
+// Note that this RE relies on the intentional spacing
+// TODO: we could lock down further by requring expressions on eithre side of dual operators
 
+var safeEvalRe = /^ *(\(|[0-9]+|false|true|!)(( |\()+([0-9]+|true|false|!|&&|[|]{2}|==|!=|\+|-|%|\*|<|>|<=|>=)( |\)*))* *$/;
 /**
 * A safe-ish (TODO: developed based on a Stackexchange post; find and link?) boolean expression evaluator.
 */
