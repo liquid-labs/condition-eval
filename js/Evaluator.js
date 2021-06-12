@@ -1,4 +1,4 @@
-const paramRe = new RegExp('(^|[ (!&=|+-])([A-Z_][A-Z0-9_]*)', 'g')
+const paramRe = /(^|[ (!&=|+-])([A-Z_][A-Z0-9_]*)/g
 // start with: (, number, bool, or unary op !
 // at least on space or param
 // then maybe 0+ safe stuff
@@ -36,11 +36,11 @@ const Evaluator = class {
       throw new Error(`Expression must be a string. Got: '${origExpression}'.`)
     }
 
-    var expression = origExpression // save original expression in case we need to reflect to user on error
+    let expression = origExpression // save original expression in case we need to reflect to user on error
 
     // replace all the parameters in the expression
     const results = expression.matchAll(paramRe)
-    for (var result of results) {
+    for (const result of results) {
       const param = result[2]
       let val = this.parameters[param] // look on the parameter object
       if (val === undefined) { // if not defined, look on process.env

@@ -24,9 +24,9 @@ describe('Evaluator.evalTruth', () => {
   ${'greater than equal to'} | ${'2 >= 1'} | ${{}} | ${true}
   ${'less than equal to'} | ${'1 <= 2'} | ${{}} | ${true}
   `("$desc; '$expression' with conditions '$parameters' -> $result'", ({ desc, expression, parameters, result }) => {
-  const evaluator = new Evaluator({ parameters : parameters })
-  expect(evaluator.evalTruth(expression)).toBe(result)
-})
+    const evaluator = new Evaluator({ parameters : parameters })
+    expect(evaluator.evalTruth(expression)).toBe(result)
+  })
 
   test('falls back to process.env for substitution', () => {
     process.env.FOO = 'true'
@@ -45,19 +45,19 @@ describe('Evaluator.evalTruth', () => {
   ${'FALSE'}
   ${'UNKNOWN'}
   `("rejects unknown parameter '$param'", ({ param }) => {
-  const evaluator = new Evaluator()
-  const expression = `true || ${param}`
-  expect(() => evaluator.evalTruth(expression)).toThrow(new RegExp(`^Condition parameter '${param}' is not defined.`))
-})
+    const evaluator = new Evaluator()
+    const expression = `true || ${param}`
+    expect(() => evaluator.evalTruth(expression)).toThrow(new RegExp(`^Condition parameter '${param}' is not defined.`))
+  })
 
   test.each`
   expression
   ${'someFunc()'}
   ${'~1'}
   `("rejects unsafe expression '$expression'", ({ expression }) => {
-  const evaluator = new Evaluator()
-  expect(() => evaluator.evalTruth(expression)).toThrow(/Invalid expression/)
-})
+    const evaluator = new Evaluator()
+    expect(() => evaluator.evalTruth(expression)).toThrow(/Invalid expression/)
+  })
 
   test.each`
   input
@@ -66,7 +66,7 @@ describe('Evaluator.evalTruth', () => {
   ${1}
   ${true}
   `("rejects non-string input '$input'", ({ input }) => {
-  const evaluator = new Evaluator()
-  expect(() => evaluator.evalTruth(input)).toThrow(/^Expression must be a string./)
-})
+    const evaluator = new Evaluator()
+    expect(() => evaluator.evalTruth(input)).toThrow(/^Expression must be a string./)
+  })
 })
