@@ -28,11 +28,10 @@
     "url": "https://github.com/Liquid-Labs/condition-eval/issues"
   },
   "homepage": "https://github.com/Liquid-Labs/condition-eval#readme",
-  "liquidDev": {
+  "liq": {
     "orgBase": "git@github.com:Liquid-Labs/Liquid-Labs.git"
   },
   "devDependencies": {
-    "@liquid-labs/catalyst-scripts": "^1.0.0-alpha.28"
-  },
-  "dependencies": {}
+    "@liquid-labs/catalyst-scripts": "^1.0.0-alpha.36"
+  }
 }
