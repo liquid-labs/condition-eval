@@ -9,13 +9,13 @@
     "dist/"
   ],
   "scripts": {
-    "build": "catalyst-scripts build",
-    "pretest": "catalyst-scripts pretest",
-    "test": "catalyst-scripts test",
-    "preversion": "npm run build && npm test && npm run lint",
+    "build": "JS_SRC=src catalyst-scripts build",
+    "pretest": "JS_SRC=src catalyst-scripts pretest",
+    "test": "JS_SRC=src catalyst-scripts test",
+    "preversion": "JS_SRC=src npm run build && npm test && npm run lint",
     "postversion": "git push && git push --tags",
-    "lint": "catalyst-scripts lint",
-    "lint:fix": "catalyst-scripts lint-fix"
+    "lint": "JS_SRC=src catalyst-scripts lint",
+    "lint:fix": "JS_SRC=src catalyst-scripts lint-fix"
   },
   "keywords": [],
   "author": "Zane Rockenbaugh <zane@liquid-labs.com>",
