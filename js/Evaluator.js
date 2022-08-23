@@ -1,3 +1,5 @@
+import { booleans, severities } from './constants'
+
 const paramRe = /(^|[ (!&=|+-])([A-Z_][A-Z0-9_]*)/g
 // start with: (, number, bool, or unary op !
 // at least on space or param
@@ -18,20 +20,34 @@ const Evaluator = class {
   /**
   * Recogrizes 'parameters' and 'zeroRes' field.
   *
-  * 'parameters' maps strings to values. E.g.: parameters `{ "IS_CONTRACTOR": 1 }` would cause the condition
-  * `IS_CONTRACTOR` to evaluate true.
-  *
-  * 'zeroRes' is an array of RegExps used to match against a condition string *after* resolving all the parameters. If a
-  *    match is made, then that value is set to zero. I.e., `zeroRes` determines which parameters are default zero.
+  * - `parameters`: (opt) maps strings to values. E.g.: parameters `{ "IS_CONTRACTOR": 1 }` would cause the condition
+  *    `IS_CONTRACTOR` to evaluate true.
+  *  - `zeroRes`: (opt) is an array of RegExps used to match against a condition string *after* resolving all the
+  *    parameters. If a match is made, then that value is set to zero. I.e., `zeroRes` determines which parameters are
+  *    default zero.
+  * - `excludeBooleans`: (opt, def: `false`) if `true`, then does not load standard boolean mappings for `TRUE`/
+  *   `FALSE`, `YES`/`NO`, `ALWAYS`/`NEVER`
+  * - `excludeSeverities`: (opt, def: `false`) if `true`, then does not load standard severity mappyngs on a 0-4
+  *   scale: `NONE` (0), `LOW`/`MINOR`\`TRIVIAL` (1), `MODERATE` (2), `HIGH`/`SEVERE` (3), and `CRITICAL`/`EXISTENTIAL`
+  *   (4).
   */
-  constructor(settings) {
-    Object.assign(this, settings)
-
-    this.parameters = this.parameters || {}
-    this.zeroRes = this.zeroRes || []
+  constructor({
+      parameters,
+      zeroRes,
+      excludeBooleans = false,
+      excludeSeverities = false,
+      excludeStandards = false } = {}
+  ) {
+    this.parameters = Object.assign(
+      {},
+      parameters,
+      excludeBooleans === true || excludeStandards === true ? null : booleans,
+      excludeSeverities === true || excludeStandards === true ? null : severities
+    )
+    this.zeroRes = zeroRes || []
   }
 
-  evalTruth(origExpression) {
+  #eval(origExpression, funcFunc) {
     if (typeof origExpression !== 'string') {
       throw new Error(`Expression must be a string. Got: '${origExpression}'.`)
     }
@@ -65,7 +81,15 @@ const Evaluator = class {
       throw new Error(`Invalid expression does not fully resolve or has unsafe code: ${origExpression} => ${expression}`)
     }
     // else, let's eval it
-    return Function(`"use strict";return (${expression}) ? true : false`)() // eslint-disable-line no-new-func
+    return Function(funcFunc(expression))() // eslint-disable-line no-new-func
+  }
+  
+  evalTruth(origExpression) {
+    return this.#eval(origExpression, (expression) => `"use strict";return (${expression}) ? true : false`)
+  }
+  
+  evalNumber(origExpression) {
+    return this.#eval(origExpression, (expression) => `"use strict";return (${expression}) + 0`)
   }
 }
 

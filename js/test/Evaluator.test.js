@@ -1,6 +1,7 @@
 /* globals describe expect test */
 
 import { Evaluator } from '..'
+import { booleans, severities } from '../constants'
 
 describe('Evaluator.evalTruth', () => {
   test.each`
@@ -41,8 +42,8 @@ describe('Evaluator.evalTruth', () => {
 
   test.each`
   param
-  ${'TRUE'}
-  ${'FALSE'}
+  ${'TRUTHY'}
+  ${'FALSISH'}
   ${'UNKNOWN'}
   `("rejects unknown parameter '$param'", ({ param }) => {
     const evaluator = new Evaluator()
@@ -68,5 +69,32 @@ describe('Evaluator.evalTruth', () => {
   `("rejects non-string input '$input'", ({ input }) => {
     const evaluator = new Evaluator()
     expect(() => evaluator.evalTruth(input)).toThrow(/^Expression must be a string./)
+  })
+  
+  describe('standard constants', () => {
+    const evaluator = new Evaluator()
+    const standards = Object.assign({}, booleans, severities)
+    for (const key of Object.keys(standards)) {
+      test(`Recognizes standard constant '${key}' by default`, () => expect(evaluator.evalNumber(key)).toEqual(standards[key]))
+    }
+    
+    test.each([
+      ['Can exclude booleans', { excludeBooleans: true }, { booleans: false, severities: true }],
+      ['Can exclude severities', { excludeSeverities: true }, { booleans: true, severities: false }],
+      ['Can exclude booleans and severities', { excludeBooleans: true, excludeSeverities: true }, { booleans: false, severities: false }],
+      ['Can exclude all stanadrds', { excludeStandards: true }, { booleans: false, severities: false }]
+    ])('%s (%p)', (desc, settings, expectations) => {
+      const evaluator = new Evaluator(settings)
+      for (const key of Object.keys(booleans)) {
+        expectations.booleans
+          ? expect(evaluator.evalNumber(key)).toEqual(standards[key])
+          : expect(() => evaluator.evalNumber(key)).toThrow()
+      }
+      for (const key of Object.keys(severities)) {
+        expectations.severities
+          ? expect(evaluator.evalNumber(key)).toEqual(standards[key])
+          : expect(() => evaluator.evalNumber(key)).toThrow()
+      }
+    })
   })
 })
