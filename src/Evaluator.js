@@ -32,11 +32,12 @@ const Evaluator = class {
   *   (4).
   */
   constructor({
-      parameters,
-      zeroRes,
-      excludeBooleans = false,
-      excludeSeverities = false,
-      excludeStandards = false } = {}
+    parameters,
+    zeroRes,
+    excludeBooleans = false,
+    excludeSeverities = false,
+    excludeStandards = false
+  } = {}
   ) {
     this.parameters = Object.assign(
       {},
@@ -83,11 +84,11 @@ const Evaluator = class {
     // else, let's eval it
     return Function(funcFunc(expression))() // eslint-disable-line no-new-func
   }
-  
+
   evalTruth(origExpression) {
     return this.#eval(origExpression, (expression) => `"use strict";return (${expression}) ? true : false`)
   }
-  
+
   evalNumber(origExpression) {
     return this.#eval(origExpression, (expression) => `"use strict";return (${expression}) + 0`)
   }
