@@ -2,20 +2,19 @@
   "name": "@liquid-labs/condition-eval",
   "version": "1.0.0-alpha.11",
   "description": "",
-  "main": "dist/index.js",
-  "module": "dist/index.es.js",
+  "main": "dist/condition-eval.js",
+  "module": "dist/condition-eval.mjs",
   "files": [
     "bin/",
     "dist/"
   ],
   "scripts": {
-    "build": "JS_SRC=src catalyst-scripts build",
-    "pretest": "JS_SRC=src catalyst-scripts pretest",
-    "test": "JS_SRC=src catalyst-scripts test",
-    "preversion": "JS_SRC=src npm run build && npm test && npm run lint",
-    "postversion": "git push && git push --tags",
-    "lint": "JS_SRC=src catalyst-scripts lint",
-    "lint:fix": "JS_SRC=src catalyst-scripts lint-fix"
+    "build": "make built,
+    "test": "make test",
+    "preversion": "make qa",
+    "lint": "make lint",
+    "lint:fix": "make lint-fix",
+    "qa": "make qa"
   },
   "keywords": [],
   "author": "Zane Rockenbaugh <zane@liquid-labs.com>",
@@ -32,6 +31,6 @@
     "orgBase": "git@github.com:Liquid-Labs/Liquid-Labs.git"
   },
   "devDependencies": {
-    "@liquid-labs/catalyst-scripts": "^1.0.0-alpha.36"
+    "@liquid-labs/catalyst-scripts": "^1.0.0-alpha.57"
   }
 }
