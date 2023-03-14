@@ -1,1 +1,1 @@
-export * from './Evaluator.js'
+export * from './Evaluator'
