@@ -1,0 +1,6 @@
+
+/Users/zane/.liq/playground/liquid-labs/condition-eval/src/index.js
+  1:15  error  Unexpected use of file extension "js" for "./Evaluator.js"  import/extensions
+
+✖ 1 problem (1 error, 0 warnings)
+
