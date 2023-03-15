@@ -9,7 +9,7 @@
     "dist/"
   ],
   "scripts": {
-    "build": "make built",
+    "build": "make build",
     "test": "make test",
     "preversion": "make qa",
     "lint": "make lint",
