@@ -1,6 +1,6 @@
 {
   "name": "@liquid-labs/condition-eval",
-  "version": "1.0.0-alpha.11",
+  "version": "1.0.0-alpha.12",
   "description": "",
   "main": "dist/condition-eval.js",
   "module": "dist/condition-eval.mjs",
@@ -9,7 +9,7 @@
     "dist/"
   ],
   "scripts": {
-    "build": "make built",
+    "build": "make build",
     "test": "make test",
     "preversion": "make qa",
     "lint": "make lint",
