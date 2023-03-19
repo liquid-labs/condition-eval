@@ -7,7 +7,7 @@ const paramRe = /(^|[ (!&=|+-])([A-Z_][A-Z0-9_]*)/g
 // Note that this RE relies on the intentional spacing
 // TODO: we could lock down further by requring expressions on eithre side of dual operators
 const safeEvalRe =
-  /^ *(\(|[0-9]+|false|true|!)(( |\()+([0-9]+|true|false|!|&&|[|]{2}|==|!=|\+|-|%|\*|<|>|<=|>=)( |\)*))* *$/
+  /^ *(\(|-?[0-9]+|false|true|!)(( |\()+(-?[0-9]+|true|false|!|&&|[|]{2}|==|!=|\+|-|%|\*|<|>|<=|>=)( |\)*))* *$/
 
 /**
 * A safe-ish (TODO: developed based on a Stackexchange post; find and link?) boolean expression evaluator.

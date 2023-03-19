@@ -3,32 +3,7 @@
 import { Evaluator } from '..'
 import { booleans, severities } from '../constants'
 
-describe('Evaluator.evalTruth', () => {
-  test.each`
-  desc | expression | parameters | result
-  ${'trivial false'} | ${'0'} | ${{}} | ${false}
-  ${'trivial false'} | ${'false'} | ${{}} | ${false}
-  ${'trivial true'} | ${'1'} | ${{}} | ${true}
-  ${'trivial true'} | ${'true'} | ${{}} | ${true}
-  ${'extraneous parameters'} | ${'true'} | ${{ blah : 0 }} | ${true}
-  ${'simple parameter sub'} | ${'FOO'} | ${{ FOO : 1 }} | ${true}
-  // This was failing at one point; not sure why
-  ${'simple parameter sub - unkown bug check'} | ${'BUSINESS'} | ${{ BUSINESS : 1 }} | ${true}
-  ${'simple parameter sub - single char'} | ${'B'} | ${{ B : 1 }} | ${true}
-  ${'complex expression'} | ${'BAR || (FOO && 1)'} | ${{ BAR : 'false', FOO : 1 }} | ${true}
-  ${'simple math'}| ${'2 + BAR - FOO == 3'} | ${{ BAR : 4, FOO : 3 }} | ${true}
-  ${'complex math'}| ${'(BAR % 2 == 0) && (FOO * 3 != 6)'} | ${{ BAR : 4, FOO : 3 }} | ${true}
-  ${'not expression'} | ${'!BAR'} | ${{ BAR : 1 }} | ${false}
-  ${'complex not expression'} | ${'FOO && !BAR'} | ${{ FOO : 1, BAR : false }} | ${true}
-  ${'greater than'} | ${'2 > 1'} | ${{}} | ${true}
-  ${'less than'} | ${'1 < 2'} | ${{}} | ${true}
-  ${'greater than equal to'} | ${'2 >= 1'} | ${{}} | ${true}
-  ${'less than equal to'} | ${'1 <= 2'} | ${{}} | ${true}
-  `("$desc; '$expression' with conditions '$parameters' -> $result'", ({ desc, expression, parameters, result }) => {
-    const evaluator = new Evaluator({ parameters : parameters })
-    expect(evaluator.evalTruth(expression)).toBe(result)
-  })
-
+describe('Evaluator', () => {
   test('falls back to process.env for substitution', () => {
     process.env.FOO = 'true'
     const evaluator = new Evaluator({ parameters : { BAR : 'false' } })
@@ -69,6 +44,51 @@ describe('Evaluator.evalTruth', () => {
   `("rejects non-string input '$input'", ({ input }) => {
     const evaluator = new Evaluator()
     expect(() => evaluator.evalTruth(input)).toThrow(/^Expression must be a string./)
+  })
+
+  describe('evalTruth', () => {
+    test.each`
+    desc | expression | parameters | result
+    ${'trivial false'} | ${'0'} | ${{}} | ${false}
+    ${'trivial false'} | ${'false'} | ${{}} | ${false}
+    ${'trivial true'} | ${'1'} | ${{}} | ${true}
+    ${'trivial true'} | ${'true'} | ${{}} | ${true}
+    ${'extraneous parameters'} | ${'true'} | ${{ blah : 0 }} | ${true}
+    ${'simple parameter sub'} | ${'FOO'} | ${{ FOO : 1 }} | ${true}
+    // This was failing at one point; not sure why
+    ${'simple parameter sub - unkown bug check'} | ${'BUSINESS'} | ${{ BUSINESS : 1 }} | ${true}
+    ${'simple parameter sub - single char'} | ${'B'} | ${{ B : 1 }} | ${true}
+    ${'complex expression'} | ${'BAR || (FOO && 1)'} | ${{ BAR : 'false', FOO : 1 }} | ${true}
+    ${'simple math'}| ${'2 + BAR - FOO == 3'} | ${{ BAR : 4, FOO : 3 }} | ${true}
+    ${'complex math'}| ${'(BAR % 2 == 0) && (FOO * 3 != 6)'} | ${{ BAR : 4, FOO : 3 }} | ${true}
+    ${'not expression'} | ${'!BAR'} | ${{ BAR : 1 }} | ${false}
+    ${'complex not expression'} | ${'FOO && !BAR'} | ${{ FOO : 1, BAR : false }} | ${true}
+    ${'greater than'} | ${'2 > 1'} | ${{}} | ${true}
+    ${'less than'} | ${'1 < 2'} | ${{}} | ${true}
+    ${'greater than equal to'} | ${'2 >= 1'} | ${{}} | ${true}
+    ${'less than equal to'} | ${'1 <= 2'} | ${{}} | ${true}
+    `("$desc; eval of '$expression' with conditions '$parameters' -> $result'", ({ desc, expression, parameters, result }) => {
+      const evaluator = new Evaluator({ parameters : parameters })
+      expect(evaluator.evalTruth(expression)).toBe(result)
+    })
+  })
+
+  describe('evalNumber', () => {
+    test.each`
+    desc | expression | parameters | result
+    ${'trivial 0'} | ${'0'} | ${{}} | ${0}
+    ${'trivial 23'} | ${'23'} | ${{}} | ${23}
+    ${'trivial -23'} | ${'-23'} | ${{}} | ${-23}
+    ${'extraneous parameters'} | ${'18'} | ${{ blah : 0 }} | ${18}
+    ${'simple parameter sub'} | ${'FOO'} | ${{ FOO : 1 }} | ${1}
+    ${'complex expression'} | ${'BAR || (FOO + 1)'} | ${{ BAR : 'false', FOO : 1 }} | ${2}
+    ${'simple math'}| ${'2 + BAR - FOO'} | ${{ BAR : 4, FOO : 3 }} | ${3}
+    ${'complex math'}| ${'(BAR % 2) - (FOO * 3)'} | ${{ BAR : 4, FOO : 3 }} | ${-9}
+    ${'simple math with negative numbers'} | ${'-4 - -8 + 1'} | ${{}} | ${5}
+    `("$desc; eval of '$expression' with conditions '$parameters' -> $result'", ({ desc, expression, parameters, result }) => {
+      const evaluator = new Evaluator({ parameters : parameters })
+      expect(evaluator.evalNumber(expression)).toBe(result)
+    })
   })
 
   describe('standard constants', () => {
