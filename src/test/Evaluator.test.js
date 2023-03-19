@@ -74,7 +74,7 @@ describe('Evaluator.evalTruth', () => {
   describe('standard constants', () => {
     const standards = Object.assign({}, booleans, severities)
 
-    test.each(Object.keys(standards))(`Recognizes standard constant '%s'`, (key) => {
+    test.each(Object.keys(standards))('Recognizes standard constant \'%s\'', (key) => {
       const evaluator = new Evaluator()
       expect(evaluator.evalNumber(key)).toEqual(standards[key])
     })
