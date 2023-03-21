@@ -1,49 +1,51 @@
 /* globals describe expect test */
 
-import { Evaluator } from '..'
+import { Evaluator, extractParameters } from '..'
 import { booleans, severities } from '../constants'
 
 describe('Evaluator', () => {
-  test('falls back to process.env for substitution', () => {
-    process.env.FOO = 'true'
-    const evaluator = new Evaluator({ parameters : { BAR : 'false' } })
-    expect(evaluator.evalTruth('BAR || FOO')).toBe(true)
-  })
+  describe('expression processing', () => {
+    test('falls back to process.env for substitution', () => {
+      process.env.FOO = 'true'
+      const evaluator = new Evaluator({ parameters : { BAR : 'false' } })
+      expect(evaluator.evalTruth('BAR || FOO')).toBe(true)
+    })
 
-  test('utilizes zeroRes', () => {
-    const evaluator = new Evaluator({ zeroRes : [/^.+_ZERO_PARAM/] })
-    expect(evaluator.evalTruth('SOME_ZERO_PARAM')).toBe(false)
-  })
+    test('utilizes zeroRes', () => {
+      const evaluator = new Evaluator({ zeroRes : [/^.+_ZERO_PARAM/] })
+      expect(evaluator.evalTruth('SOME_ZERO_PARAM')).toBe(false)
+    })
 
-  test.each`
-  param
-  ${'TRUTHY'}
-  ${'FALSISH'}
-  ${'UNKNOWN'}
-  `("rejects unknown parameter '$param'", ({ param }) => {
-    const evaluator = new Evaluator()
-    const expression = `true || ${param}`
-    expect(() => evaluator.evalTruth(expression)).toThrow(new RegExp(`^Condition parameter '${param}' is not defined.`))
-  })
+    test.each`
+    param
+    ${'TRUTHY'}
+    ${'FALSISH'}
+    ${'UNKNOWN'}
+    `("rejects unknown parameter '$param'", ({ param }) => {
+      const evaluator = new Evaluator()
+      const expression = `true || ${param}`
+      expect(() => evaluator.evalTruth(expression)).toThrow(new RegExp(`^Condition parameter '${param}' is not defined.`))
+    })
 
-  test.each`
-  expression
-  ${'someFunc()'}
-  ${'~1'}
-  `("rejects unsafe expression '$expression'", ({ expression }) => {
-    const evaluator = new Evaluator()
-    expect(() => evaluator.evalTruth(expression)).toThrow(/Invalid expression/)
-  })
+    test.each`
+    expression
+    ${'someFunc()'}
+    ${'~1'}
+    `("rejects unsafe expression '$expression'", ({ expression }) => {
+      const evaluator = new Evaluator()
+      expect(() => evaluator.evalTruth(expression)).toThrow(/Invalid expression/)
+    })
 
-  test.each`
-  input
-  ${0}
-  ${false}
-  ${1}
-  ${true}
-  `("rejects non-string input '$input'", ({ input }) => {
-    const evaluator = new Evaluator()
-    expect(() => evaluator.evalTruth(input)).toThrow(/^Expression must be a string./)
+    test.each`
+    input
+    ${0}
+    ${false}
+    ${1}
+    ${true}
+    `("rejects non-string input '$input'", ({ input }) => {
+      const evaluator = new Evaluator()
+      expect(() => evaluator.evalTruth(input)).toThrow(/^Expression must be a string./)
+    })
   })
 
   describe('evalTruth', () => {
@@ -64,7 +66,7 @@ describe('Evaluator', () => {
     ${'not expression'} | ${'!BAR'} | ${{ BAR : 1 }} | ${false}
     ${'complex not expression'} | ${'FOO && !BAR'} | ${{ FOO : 1, BAR : false }} | ${true}
     ${'greater than'} | ${'2 > 1'} | ${{}} | ${true}
-    ${'less than'} | ${'1 < 2'} | ${{}} | ${true}
+    ${'less than'} | ${'1<2'} | ${{}} | ${true}
     ${'greater than equal to'} | ${'2 >= 1'} | ${{}} | ${true}
     ${'less than equal to'} | ${'1 <= 2'} | ${{}} | ${true}
     `("$desc; eval of '$expression' with conditions '$parameters' -> $result'", ({ desc, expression, parameters, result }) => {
@@ -85,6 +87,7 @@ describe('Evaluator', () => {
     ${'simple math'}| ${'2 + BAR - FOO'} | ${{ BAR : 4, FOO : 3 }} | ${3}
     ${'complex math'}| ${'(BAR % 2) - (FOO * 3)'} | ${{ BAR : 4, FOO : 3 }} | ${-9}
     ${'simple math with negative numbers'} | ${'-4 - -8 + 1'} | ${{}} | ${5}
+    ${'all operators'} | ${'-4 - 1 + 2 % 5 * 2**3 + (1 | 2) - ((2 & 3)>>1) - ((2 ^ 3) << 1) + ~(~1)'} | ${{}} | ${12}
     `("$desc; eval of '$expression' with conditions '$parameters' -> $result'", ({ desc, expression, parameters, result }) => {
       const evaluator = new Evaluator({ parameters : parameters })
       expect(evaluator.evalNumber(expression)).toBe(result)
@@ -118,4 +121,18 @@ describe('Evaluator', () => {
       }
     })
   })
+})
+
+describe('extractParameters', () => {
+  test.each([
+    ['PARAM1', ['PARAM1']],
+    ['PARAM1 || PARAM2', ['PARAM1', 'PARAM2']],
+    ['(FOO + BAR)*FOO', ['FOO', 'BAR']],
+    ['(FOO + BAR - 100) * FOO/BAZ', ['FOO', 'BAR', 'BAZ']],
+    ['(foo + bar - 100) * FOO/baz', ['FOO']],
+    ['(1 + 2 - 100) * 3/2', []],
+    ['(true || false) && FOO', ['FOO']],
+    ['(true || false) && true', []]
+  ])('expression %s has params %p', (expression, expectedParams) =>
+    expect(extractParameters(expression)).toEqual(expectedParams))
 })
