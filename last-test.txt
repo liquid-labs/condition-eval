@@ -1,0 +1,86 @@
+PASS test-staging/test/Evaluator.test.js
+  Evaluator
+    expression processing
+      ✓ falls back to process.env for substitution (1 ms)
+      ✓ utilizes zeroRes (1 ms)
+      ✓ rejects unknown parameter 'TRUTHY' (9 ms)
+      ✓ rejects unknown parameter 'FALSISH'
+      ✓ rejects unknown parameter 'UNKNOWN'
+      ✓ rejects unsafe expression 'someFunc()' (1 ms)
+      ✓ rejects unsafe expression '~1'
+      ✓ rejects non-string input '0'
+      ✓ rejects non-string input 'false'
+      ✓ rejects non-string input '1'
+      ✓ rejects non-string input 'true'
+    evalTruth
+      ✓ trivial false; eval of '0' with conditions '{}' -> false'
+      ✓ trivial false; eval of 'false' with conditions '{}' -> false'
+      ✓ trivial true; eval of '1' with conditions '{}' -> true'
+      ✓ trivial true; eval of 'true' with conditions '{}' -> true'
+      ✓ extraneous parameters; eval of 'true' with conditions '{"blah": 0}' -> true'
+      ✓ simple parameter sub; eval of 'FOO' with conditions '{"FOO": 1}' -> true'
+      ✓ simple parameter sub - unkown bug check; eval of 'BUSINESS' with conditions '{"BUSINESS": 1}' -> true'
+      ✓ simple parameter sub - single char; eval of 'B' with conditions '{"B": 1}' -> true'
+      ✓ complex expression; eval of 'BAR || (FOO && 1)' with conditions '{"BAR": "false", "FOO": 1}' -> true'
+      ✓ simple math; eval of '2 + BAR - FOO == 3' with conditions '{"BAR": 4, "FOO": 3}' -> true'
+      ✓ complex math; eval of '(BAR % 2 == 0) && (FOO * 3 != 6)' with conditions '{"BAR": 4, "FOO": 3}' -> true'
+      ✓ not expression; eval of '!BAR' with conditions '{"BAR": 1}' -> false'
+      ✓ complex not expression; eval of 'FOO && !BAR' with conditions '{"BAR": false, "FOO": 1}' -> true'
+      ✓ greater than; eval of '2 > 1' with conditions '{}' -> true'
+      ✓ less than; eval of '1<2' with conditions '{}' -> true'
+      ✓ greater than equal to; eval of '2 >= 1' with conditions '{}' -> true'
+      ✓ less than equal to; eval of '1 <= 2' with conditions '{}' -> true'
+    evalNumber
+      ✓ trivial 0; eval of '0' with conditions '{}' -> 0'
+      ✓ trivial 23; eval of '23' with conditions '{}' -> 23'
+      ✓ trivial -23; eval of '-23' with conditions '{}' -> -23'
+      ✓ extraneous parameters; eval of '18' with conditions '{"blah": 0}' -> 18'
+      ✓ simple parameter sub; eval of 'FOO' with conditions '{"FOO": 1}' -> 1'
+      ✓ complex expression; eval of 'BAR || (FOO + 1)' with conditions '{"BAR": "false", "FOO": 1}' -> 2'
+      ✓ simple math; eval of '2 + BAR - FOO' with conditions '{"BAR": 4, "FOO": 3}' -> 3'
+      ✓ complex math; eval of '(BAR % 2) - (FOO * 3)' with conditions '{"BAR": 4, "FOO": 3}' -> -9'
+      ✓ simple math with negative numbers; eval of '-4 - -8 + 1' with conditions '{}' -> 5'
+      ✓ all operators; eval of '-4 - 1 + 2 % 5 * 2**3 + (1 | 2) - ((2 & 3)>>1) - ((2 ^ 3) << 1) + ~(~1)' with conditions '{}' -> 12'
+    standard constants
+      ✓ Recognizes standard constant 'YES'
+      ✓ Recognizes standard constant 'NO'
+      ✓ Recognizes standard constant 'ALWAYS' (1 ms)
+      ✓ Recognizes standard constant 'NEVER'
+      ✓ Recognizes standard constant 'TRUE'
+      ✓ Recognizes standard constant 'FALSE'
+      ✓ Recognizes standard constant 'NONE'
+      ✓ Recognizes standard constant 'LOW'
+      ✓ Recognizes standard constant 'MINOR'
+      ✓ Recognizes standard constant 'TRIVIAL'
+      ✓ Recognizes standard constant 'MODERATE'
+      ✓ Recognizes standard constant 'HIGH' (1 ms)
+      ✓ Recognizes standard constant 'SEVERE'
+      ✓ Recognizes standard constant 'CRITICAL'
+      ✓ Recognizes standard constant 'EXISTENTIAL'
+      ✓ Can exclude booleans ({"excludeBooleans": true}) (3 ms)
+      ✓ Can exclude severities ({"excludeSeverities": true}) (1 ms)
+      ✓ Can exclude booleans and severities ({"excludeBooleans": true, "excludeSeverities": true}) (2 ms)
+      ✓ Can exclude all stanadrds ({"excludeStandards": true}) (2 ms)
+  extractParameters
+    ✓ expression PARAM1 has params ["PARAM1"]
+    ✓ expression PARAM1 || PARAM2 has params ["PARAM1", "PARAM2"] (1 ms)
+    ✓ expression (FOO + BAR)*FOO has params ["FOO", "BAR"]
+    ✓ expression (FOO + BAR - 100) * FOO/BAZ has params ["FOO", "BAR", "BAZ"]
+    ✓ expression (foo + bar - 100) * FOO/baz has params ["FOO"]
+    ✓ expression (1 + 2 - 100) * 3/2 has params []
+    ✓ expression (true || false) && FOO has params ["FOO"]
+    ✓ expression (true || false) && true has params []
+
+---------------|---------|----------|---------|---------|-------------------
+File           | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+---------------|---------|----------|---------|---------|-------------------
+All files      |     100 |     82.5 |     100 |     100 |                   
+ Evaluator.js  |     100 |    83.78 |     100 |     100 | 1                 
+ constants.mjs |     100 |      100 |     100 |     100 |                   
+ index.js      |     100 |    66.66 |     100 |     100 | 1                 
+---------------|---------|----------|---------|---------|-------------------
+Test Suites: 1 passed, 1 total
+Tests:       65 passed, 65 total
+Snapshots:   0 total
+Time:        0.201 s, estimated 1 s
+Ran all test suites matching /.\/test-staging/i.
