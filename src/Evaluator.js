@@ -1,13 +1,13 @@
 import { booleans, severities } from './constants'
 
-const paramRe = /(^|[ (!&=|+-])([A-Z_][A-Z0-9_]*)/g
+const paramRe = /(?:^|[ (!&=|^~+%/<>-])([A-Z_][A-Z0-9_]*)/g
 // start with: (, number, bool, or unary op !
-// at least on space or param
+// at least one space or param
 // then maybe 0+ safe stuff
 // Note that this RE relies on the intentional spacing
 // TODO: we could lock down further by requring expressions on eithre side of dual operators
 const safeEvalRe =
-  /^ *(\(|-?[0-9]+|false|true|!)(( |\()+(-?[0-9]+|true|false|!|&&|[|]{2}|==|!=|\+|-|%|\*|<|>|<=|>=)( |\)*))* *$/
+  /^ *(?:\(|-?[0-9]+|false|true|!)(?:(?: *|\()+(?:-?[0-9]+|true|false|&&|[|]{2}|==|!=|[+~%*/^&|!<>-]|<=|>=)(?: |\)*))* *$/
 
 /**
 * A safe-ish (TODO: developed based on a Stackexchange post; find and link?) boolean expression evaluator.
@@ -58,7 +58,7 @@ const Evaluator = class {
     // replace all the parameters in the expression
     const results = expression.matchAll(paramRe)
     for (const result of results) {
-      const param = result[2]
+      const param = result[1]
       let val = this.parameters[param] // look on the parameter object
       if (val === undefined) { // if not defined, look on process.env
         val = process.env[param]
@@ -94,4 +94,12 @@ const Evaluator = class {
   }
 }
 
-export { Evaluator }
+const extractParameters = (origExpression) => {
+  const params = []
+  for (const results of origExpression.matchAll(paramRe)) {
+    params.push(results[1])
+  }
+  return params.filter((p, i, arr) => i === arr.indexOf(p))
+}
+
+export { Evaluator, extractParameters }
