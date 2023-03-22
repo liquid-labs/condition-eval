@@ -22,6 +22,6 @@ describe('verifyExpressionSafe', () => {
     'ALLCAP_FUNCTION_WITH_SPACE ()',
     'ALLCAP_FUNCTION_WITH_ARG(true)',
     'ALLCAP_FUNCTION_WITH_SPACE_AND_ARG (true)',
-    'PARAM.VALUE',
+    'PARAM.VALUE'
   ])("recognizes '%s' as UNSAFE", (expression) => expect(() => verifyExpressionSafe({ expression })).toThrow())
 })
