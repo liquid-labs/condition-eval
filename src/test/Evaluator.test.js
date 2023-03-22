@@ -84,6 +84,8 @@ describe('Evaluator', () => {
     ${'converts truthy parameters'} | ${'FOO'} | ${{ FOO : 'F' }} | ${false}
     ${'converts truthy parameters'} | ${'FOO'} | ${{ FOO : 'No' }} | ${false}
     ${'converts truthy parameters'} | ${'FOO'} | ${{ FOO : 'N' }} | ${false}
+    ${'converts empty strings to false'} | ${'FOO'} | ${{ FOO : '' }} | ${false}
+    ${'converts non-empty+non-special strings to true'} | ${'FOO'} | ${{ FOO : 'hi!' }} | ${true}
     `("$desc; eval of '$expression' with conditions '$parameters' -> $result'", ({ desc, expression, parameters, result }) => {
       const evaluator = new Evaluator({ parameters : parameters })
       expect(evaluator.evalTruth(expression)).toBe(result)
