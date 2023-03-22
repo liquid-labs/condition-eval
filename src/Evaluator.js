@@ -1,13 +1,6 @@
 import { booleans, severities } from './constants'
-
-const paramRe = /(?:^|[ (!&=|^~+%/<>-])([A-Z_][A-Z0-9_]*)/g
-// start with: (, number, bool, or unary op !
-// at least one space or param
-// then maybe 0+ safe stuff
-// Note that this RE relies on the intentional spacing
-// TODO: we could lock down further by requring expressions on eithre side of dual operators
-const safeEvalRe =
-  /^ *(?:\(|-?[0-9]+|false|true|!)(?:(?: *|\()+(?:-?[0-9]+|true|false|&&|[|]{2}|==|!=|[+~%*/^&|!<>-]|<=|>=)(?: |\)*))* *$/
+import { extractParameters } from './extract-parameters'
+import { verifyExpressionSafe } from './verify-expression-safe'
 
 /**
 * A safe-ish (TODO: developed based on a Stackexchange post; find and link?) boolean expression evaluator.
@@ -56,9 +49,8 @@ const Evaluator = class {
     let expression = origExpression // save original expression in case we need to reflect to user on error
 
     // replace all the parameters in the expression
-    const results = expression.matchAll(paramRe)
-    for (const result of results) {
-      const param = result[1]
+    const params = extractParameters({ expression })
+    for (const param of params) {
       let val = this.parameters[param] // look on the parameter object
       if (val === undefined) { // if not defined, look on process.env
         val = process.env[param]
@@ -86,10 +78,8 @@ const Evaluator = class {
       expression = expression.replace(new RegExp(`(^|[^A-Z0-9_])${param}([^A-Z0-9_]|$)`, 'g'), `$1 ${val} $2`)
     }
 
-    // check that everything is save
-    if (!expression.match(safeEvalRe)) {
-      throw new Error(`Invalid expression does not fully resolve or has unsafe code: ${origExpression} => ${expression}`)
-    }
+    // check that everything is safe
+    verifyExpressionSafe({ expression, origExpression })
     // else, let's eval it
     return Function(funcFunc(expression))() // eslint-disable-line no-new-func
   }
@@ -103,12 +93,4 @@ const Evaluator = class {
   }
 }
 
-const extractParameters = (origExpression) => {
-  const params = []
-  for (const results of origExpression.matchAll(paramRe)) {
-    params.push(results[1])
-  }
-  return params.filter((p, i, arr) => i === arr.indexOf(p))
-}
-
-export { Evaluator, extractParameters }
+export { Evaluator }
