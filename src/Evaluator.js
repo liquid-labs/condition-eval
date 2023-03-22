@@ -71,6 +71,15 @@ const Evaluator = class {
           throw new Error(`Condition parameter '${param}' is not defined. Update settings and/or check expression.`)
         }
       }
+      else if (val.match?.(/\s*(?:y(?:es)?|t(?:rue)?)\s*/i)) {
+        val = 'true'
+      }
+      else if (val.match?.(/\s*(?:n(?:o)?|f(?:alse)?)\s*/i)) {
+        val = 'false'
+      }
+      else if (val.match && !val.match(/\d+(\.\d+)?/)) { // then convert to true or false based on whether it's empty or not
+        val = !!val
+      }
 
       // 'replaceAll' not supported on node (TODO: add Babel tform); though 'replace' does replace all *if* first arg is
       // RE... so... maybe not necessary?)

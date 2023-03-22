@@ -57,7 +57,6 @@ describe('Evaluator', () => {
     ${'trivial true'} | ${'true'} | ${{}} | ${true}
     ${'extraneous parameters'} | ${'true'} | ${{ blah : 0 }} | ${true}
     ${'simple parameter sub'} | ${'FOO'} | ${{ FOO : 1 }} | ${true}
-    // This was failing at one point; not sure why
     ${'simple parameter sub - unkown bug check'} | ${'BUSINESS'} | ${{ BUSINESS : 1 }} | ${true}
     ${'simple parameter sub - single char'} | ${'B'} | ${{ B : 1 }} | ${true}
     ${'complex expression'} | ${'BAR || (FOO && 1)'} | ${{ BAR : 'false', FOO : 1 }} | ${true}
@@ -69,6 +68,24 @@ describe('Evaluator', () => {
     ${'less than'} | ${'1<2'} | ${{}} | ${true}
     ${'greater than equal to'} | ${'2 >= 1'} | ${{}} | ${true}
     ${'less than equal to'} | ${'1 <= 2'} | ${{}} | ${true}
+    ${'converts truthy parameters'} | ${'FOO'} | ${{ FOO : 'true' }} | ${true}
+    ${'converts truthy parameters'} | ${'FOO'} | ${{ FOO : 't' }} | ${true}
+    ${'converts truthy parameters'} | ${'FOO'} | ${{ FOO : 'yes' }} | ${true}
+    ${'converts truthy parameters'} | ${'FOO'} | ${{ FOO : 'y' }} | ${true}
+    ${'converts truthy parameters'} | ${'FOO'} | ${{ FOO : 'True' }} | ${true}
+    ${'converts truthy parameters'} | ${'FOO'} | ${{ FOO : 'T' }} | ${true}
+    ${'converts truthy parameters'} | ${'FOO'} | ${{ FOO : 'Yes' }} | ${true}
+    ${'converts truthy parameters'} | ${'FOO'} | ${{ FOO : 'Y' }} | ${true}
+    ${'converts truthy parameters'} | ${'FOO'} | ${{ FOO : 'false' }} | ${false}
+    ${'converts truthy parameters'} | ${'FOO'} | ${{ FOO : 'f' }} | ${false}
+    ${'converts truthy parameters'} | ${'FOO'} | ${{ FOO : 'no' }} | ${false}
+    ${'converts truthy parameters'} | ${'FOO'} | ${{ FOO : 'N' }} | ${false}
+    ${'converts truthy parameters'} | ${'FOO'} | ${{ FOO : 'False' }} | ${false}
+    ${'converts truthy parameters'} | ${'FOO'} | ${{ FOO : 'F' }} | ${false}
+    ${'converts truthy parameters'} | ${'FOO'} | ${{ FOO : 'No' }} | ${false}
+    ${'converts truthy parameters'} | ${'FOO'} | ${{ FOO : 'N' }} | ${false}
+    ${'converts empty strings to false'} | ${'FOO'} | ${{ FOO : '' }} | ${false}
+    ${'converts non-empty+non-special strings to true'} | ${'FOO'} | ${{ FOO : 'hi!' }} | ${true}
     `("$desc; eval of '$expression' with conditions '$parameters' -> $result'", ({ desc, expression, parameters, result }) => {
       const evaluator = new Evaluator({ parameters : parameters })
       expect(evaluator.evalTruth(expression)).toBe(result)
