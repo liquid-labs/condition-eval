@@ -51,7 +51,8 @@ const Evaluator = class {
     // replace all the parameters in the expression
     const params = extractParameters({ expression })
     for (const param of params) {
-      let val = this.parameters[param] // look on the parameter object
+      const paramBits = param.split('.')
+      let val = paramBits.reduce((acc, r) => acc?.[r], this.parameters)
       if (val === undefined) { // if not defined, look on process.env
         val = process.env[param]
       }

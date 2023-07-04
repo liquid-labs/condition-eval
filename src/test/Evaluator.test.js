@@ -86,6 +86,8 @@ describe('Evaluator', () => {
     ${'converts truthy parameters'} | ${'FOO'} | ${{ FOO : 'N' }} | ${false}
     ${'converts empty strings to false'} | ${'FOO'} | ${{ FOO : '' }} | ${false}
     ${'converts non-empty+non-special strings to true'} | ${'FOO'} | ${{ FOO : 'hi!' }} | ${true}
+    ${'transaltes simple nested values'} | ${'some.path.VAR'} | ${{ some : { path : { VAR : true } } }} | ${true}
+    ${'complex expression with nested values'} | ${'bar.BAR || (FOO && 1)'} | ${{ bar : { BAR : 'false' }, FOO : 1 }} | ${true}
     `("$desc; eval of '$expression' with conditions '$parameters' -> $result'", ({ desc, expression, parameters, result }) => {
       const evaluator = new Evaluator({ parameters : parameters })
       expect(evaluator.evalTruth(expression)).toBe(result)
