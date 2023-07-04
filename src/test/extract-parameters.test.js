@@ -10,7 +10,9 @@ describe('extractParameters', () => {
     ['(foo + bar - 100) * FOO/baz', ['FOO']],
     ['(1 + 2 - 100) * 3/2', []],
     ['(true || false) && FOO', ['FOO']],
-    ['(true || false) && true', []]
+    ['(true || false) && true', []],
+    ['some.path.VAR', ['some.path.VAR']],
+    ['FOO + some.path.VAR', ['FOO', 'some.path.VAR']]
   ])('expression %s has params %p', (expression, expectedParams) =>
     expect(extractParameters({ expression })).toEqual(expectedParams))
 })
