@@ -1,0 +1,20 @@
+Test git rev: 2ab0f81ec1de09b493097d6fe9cac8c22b41a112
+PASS test/Evaluator.test.js
+PASS test/verify-expression-safe.test.js
+PASS test/extract-parameters.test.js
+----------------------------|---------|----------|---------|---------|-------------------
+File                        | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+----------------------------|---------|----------|---------|---------|-------------------
+All files                   |     100 |    73.52 |     100 |     100 |                   
+ Evaluator.js               |     100 |    83.33 |     100 |     100 | 3,58              
+ constants.mjs              |     100 |      100 |     100 |     100 |                   
+ expression-regexes.mjs     |     100 |      100 |     100 |     100 |                   
+ extract-parameters.mjs     |     100 |    18.18 |     100 |     100 | 1                 
+ verify-expression-safe.mjs |     100 |      100 |     100 |     100 |                   
+----------------------------|---------|----------|---------|---------|-------------------
+
+Test Suites: 3 passed, 3 total
+Tests:       120 passed, 120 total
+Snapshots:   0 total
+Time:        0.224 s, estimated 1 s
+Ran all test suites.
