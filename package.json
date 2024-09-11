@@ -32,6 +32,11 @@
     "packageType": "node|lib"
   },
   "devDependencies": {
-    "@liquid-labs/catalyst-scripts": "^1.0.0-alpha.57"
+    "@liquid-labs/sdlc-resource-babel-and-rollup": "^1.0.0-alpha.9",
+    "@liquid-labs/sdlc-resource-eslint": "^1.0.0-alpha.20",
+    "@liquid-labs/sdlc-resource-jest": "^1.0.0-alpha.7"
+  },
+  "dependencies": {
+    "regex-repo": "^5.0.1"
   }
 }
