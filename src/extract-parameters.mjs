@@ -5,6 +5,7 @@ const extractParameters = ({ expression }) => {
   for (const results of expression.matchAll(paramRe)) {
     params.push(results[1])
   }
+
   return params.filter((p, i, arr) => i === arr.indexOf(p))
 }
 

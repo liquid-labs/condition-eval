@@ -2,6 +2,7 @@
 /coverage
 /test-staging
 /node_modules
+/qa
 /.yalc
 /yalc.lock
 /last-test.txt

@@ -4,7 +4,7 @@ const booleans = {
   ALWAYS : 1,
   NEVER  : 0,
   TRUE   : 1,
-  FALSE  : 0
+  FALSE  : 0,
 }
 
 const severities = {
@@ -16,10 +16,7 @@ const severities = {
   HIGH        : 3,
   SEVERE      : 3,
   CRITICAL    : 4,
-  EXISTENTIAL : 4
+  EXISTENTIAL : 4,
 }
 
-export {
-  booleans,
-  severities
-}
+export { booleans, severities }

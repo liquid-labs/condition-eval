@@ -12,8 +12,9 @@ describe('verifyExpressionSafe', () => {
     '!true',
     '~19',
     '1 + 2**3 - -18',
-    'true  && (! false || (( false && false ) && false)))'
-  ])("recognizes '%s' as SAFE", (expression) => expect(() => verifyExpressionSafe({ expression })).not.toThrow())
+    'true  && (! false || (( false && false ) && false)))',
+  ])("recognizes '%s' as SAFE", (expression) =>
+    expect(() => verifyExpressionSafe({ expression })).not.toThrow())
 
   test.each([
     'functionCall()',
@@ -22,6 +23,7 @@ describe('verifyExpressionSafe', () => {
     'ALLCAP_FUNCTION_WITH_SPACE ()',
     'ALLCAP_FUNCTION_WITH_ARG(true)',
     'ALLCAP_FUNCTION_WITH_SPACE_AND_ARG (true)',
-    'PARAM.VALUE'
-  ])("recognizes '%s' as UNSAFE", (expression) => expect(() => verifyExpressionSafe({ expression })).toThrow())
+    'PARAM.VALUE',
+  ])("recognizes '%s' as UNSAFE", (expression) =>
+    expect(() => verifyExpressionSafe({ expression })).toThrow())
 })
