@@ -1,7 +1,9 @@
+import { plainFloatReString } from 'regex-repo'
+
 const singleOp = '[!~]'
 const dualOp = '(?:&&|[|]{2}|==|!=|[*]{2}|[+%*/^&|<>-]|<=|>=|<<|>>)'
 const anyOp = `(?:${singleOp}|${dualOp})`
-const literal = '(?:-?[0-9]+|false|true)'
+const literal = `(?:(?:${plainFloatReString})|false|true)`
 // const param = '(?:[A-Z_][A-Z0-9_]*)'
 const param = '(?:(?:[a-z_][a-z0-9_]*\\.)*[A-Z_][A-Z0-9_]*)'
 // const anyValue = `(?:${literal}|${param})`

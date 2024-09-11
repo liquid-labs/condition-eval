@@ -27,10 +27,19 @@ describe('Evaluator', () => {
       expect(() => evaluator.evalTruth(expression)).toThrow(new RegExp(`^Condition parameter '${param}' is not defined.`))
     })
 
+    // this is also tested directly in 'verify-expression-safe.test.js'
     test.each`
     expression
     ${'someFunc()'}
     ${'@1'}
+    ${'foo.bar()'}
+    ${'foo.bar("hi")'}
+    ${'foo.bar(1)'}
+    ${'foo.bar(baz)'}
+    ${'foo.bar ()'}
+    ${'foo.bar ("hi")'}
+    ${'foo.bar (1)'}
+    ${'foo.bar (baz)'}
     `("rejects unsafe expression '$expression'", ({ expression }) => {
       const evaluator = new Evaluator()
       expect(() => evaluator.evalTruth(expression)).toThrow(/Invalid expression/)
@@ -101,16 +110,24 @@ describe('Evaluator', () => {
     ${'trivial 0'} | ${'0'} | ${{}} | ${0}
     ${'trivial 23'} | ${'23'} | ${{}} | ${23}
     ${'trivial -23'} | ${'-23'} | ${{}} | ${-23}
+    ${'trivial 1.5'} | ${'1.5'} | ${{}} | ${1.5}
     ${'extraneous parameters'} | ${'18'} | ${{ blah : 0 }} | ${18}
     ${'simple parameter sub'} | ${'FOO'} | ${{ FOO : 1 }} | ${1}
+    ${'simple parameter sub (float)'} | ${'FOO'} | ${{ FOO : 1.25 }} | ${1.25}
     ${'complex expression'} | ${'BAR || (FOO + 1)'} | ${{ BAR : 'false', FOO : 1 }} | ${2}
+    ${'complex expression (float)'} | ${'BAR || (FOO + 1.8)'} | ${{ BAR : 'false', FOO : 0.2 }} | ${2}
     ${'simple math'}| ${'2 + BAR - FOO'} | ${{ BAR : 4, FOO : 3 }} | ${3}
+    ${'simple math (float)'}| ${'2.0 + BAR - FOO'} | ${{ BAR : 4.1, FOO : 3.1 }} | ${3}
     ${'complex math'}| ${'(BAR % 2) - (FOO * 3)'} | ${{ BAR : 4, FOO : 3 }} | ${-9}
+    ${'complex math (float)'}| ${'(BAR % 2) - (FOO * 3)'} | ${{ BAR : 4.5, FOO : 3.5 }} | ${-10}
     ${'simple math with negative numbers'} | ${'-4 - -8 + 1'} | ${{}} | ${5}
+    ${'simple math with negative numbers (float)'} | ${'-4.5 - -8.5 + 1.2'} | ${{}} | ${5.2}
     ${'all operators'} | ${'-4 - 1 + 2 % 5 * 2**3 + (1 | 2) - ((2 & 3)>>1) - ((2 ^ 3) << 1) + ~(~1)'} | ${{}} | ${12}
+    ${'all operators (float)'} | ${'-4.5 - 1.5 + 2.5 % 5 * 2.2**3.5 + (1.2 | 2.3) - ((2.2 & 3.2)>>1.5) - ((2.5 ^ 3.5) << 1.2) + ~(~1.3)'} | ${{}} | ${34.48384074529732}
     `("$desc; eval of '$expression' with conditions '$parameters' -> $result'", ({ desc, expression, parameters, result }) => {
       const evaluator = new Evaluator({ parameters : parameters })
-      expect(evaluator.evalNumber(expression)).toBe(result)
+      const precision = 1000000000
+      expect(Math.round(evaluator.evalNumber(expression)*precision)).toBe(Math.round(result*precision))
     })
   })
 
