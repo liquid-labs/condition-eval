@@ -13,6 +13,8 @@ const closer = '[ )]'
 const paramRe = new RegExp(`(?:^|${opener}|${anyOp})(${param})`, 'g')
 
 const dualOpChain = `(?:${opener}*${dualOp}${opener}*${literal}${closer}*)`
-const safeEvalRe = new RegExp(`^\\s*(?:${opener}*${literal}${dualOpChain}*${closer}*)?$`)
+const safeEvalRe = new RegExp(
+  `^\\s*(?:${opener}*${literal}${dualOpChain}*${closer}*)?$`
+)
 
 export { paramRe, safeEvalRe }
